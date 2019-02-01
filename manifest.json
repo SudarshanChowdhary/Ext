@@ -3,7 +3,7 @@
   "version": "1.0.5",
   "manifest_version": 2,
   "oauth2": {
-    "client_id": "231850193981-icgpb3arvhbikqukv6vtvt3agkgpj5f1.apps.googleusercontent.com",
+    "client_id": "231850193981-p8octgbajm8mtsr99rhpo1dbnq0vt0ek.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/drive"
     ]
