@@ -42,13 +42,44 @@ gDriveApp.factory('gdocs', function() {
 
   return gdocs;
 });
-//gDriveApp.service('gdocs', GDocs);
-//gDriveApp.controller('DocsController', ['$scope', '$http', DocsController]);
-
-// Main Angular controller for app.
 function DocsController($scope, $http, gdocs) {
   $scope.docs = [];
   $scope.keywordDefinitions="Hello";
+
+  chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.sendRequest(tab.id, {method: "getText"}, function(response) {
+        if(response.method=="getText"){
+          $scope.currentPageSource = response.data;
+        }
+    });
+});
+
+chrome.extension.onRequest.addListener(
+  function(request, sender, sendResponse) {
+      if(request.method == "getText"){
+          sendResponse({data: document.all[0].innerText, method: "getText"}); //same as innerText
+      }
+  }
+);
+
+  chrome.tabs.getSelected(function(tab){
+    console.log(tab);
+    chrome.tabs.sendRequest(tab.id, {method: "getText"}, function(response) {
+      $scope.currentPageSource= response.data;
+      if(response.method=="getText"){
+        $scope.currentPageSource= response.data;
+      }
+  });
+
+//    $scope.currentPageSource = "WINDOW" + JSON.stringify(tab);
+  });
+
+  chrome.tabs.executeScript({
+    code: "" //argument here is a string but function.toString() returns function's code
+}, (results) => {
+  $scope.currentPageSource= results[0];
+});
+
 
   // Response handler that caches file icons in the filesystem API.
   function successCallbackWithFsCaching(resp, status, headers, config) {
@@ -148,20 +179,27 @@ function DocsController($scope, $http, gdocs) {
         headers: {
           'Authorization': 'Bearer ' + gdocs.accessToken
         }, 
+        params: {'alt': 'json'},
+
         responseType: 'arraybuffer'
       };
+    //  https://drive.google.com/file/d/1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc/view?usp=sharing
+    //  https://drive.google.com/open?id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
 
+    // https://drive.google.com/uc?export=download&id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
       $http({
         method:'GET',
         headers: {
           'Authorization': 'Bearer ' + gdocs.accessToken
         }, 
-        url:'https://drive.google.com/open?id=1vpZrAhcsxYFnrKJwFWxw9k6oS88d5El4',
-        responseType:'arraybuffer'
+        params: {'alt': 'media'},
+        url:'https://drive.google.com/uc?export=download&id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc'
       }).then(function(data) {
         console.log(data);
-        var wb = XLSX.read(data.data, {type:"binary"});
-        $scope.keywordDefinitions = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        $scope.keywordDefinitions = data.data;  
+
+        // var wb = XLSX.read(data.data, {type:"binary"});
+        // $scope.keywordDefinitions = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         console.log($scope.keywordDefinitions);
         $scope.$apply(function($scope) {}); // Inform angular we made changes.
       }, function(data, status, headers, config) {
