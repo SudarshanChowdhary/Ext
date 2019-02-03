@@ -1,21 +1,3 @@
-/*
-Copyright 2012 Google Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-Author: Eric Bidelman (ericbidelman@chromium.org)
-*/
-
 function onError(e) {
   console.log(e);
 }
@@ -66,11 +48,11 @@ gDriveApp.factory('gdocs', function() {
 // Main Angular controller for app.
 function DocsController($scope, $http, gdocs) {
   $scope.docs = [];
+  $scope.keywordDefinitions="Hello";
 
   // Response handler that caches file icons in the filesystem API.
   function successCallbackWithFsCaching(resp, status, headers, config) {
     var docs = [];
-
     var totalEntries = resp.items.length;
 
     resp.items.forEach(function(entry, i) {
@@ -90,6 +72,7 @@ function DocsController($scope, $http, gdocs) {
       // Otherwise, the error callback will fire and we need to XHR it in and
       // write it to the FS.
       var fsURL = fs.root.toURL() + FOLDERNAME + '/' + doc.iconFilename;
+      console.log(fsURL);
       window.webkitResolveLocalFileSystemURL(fsURL, function(entry) {
         console.log('Fetched icon from the FS cache');
 
@@ -137,7 +120,7 @@ function DocsController($scope, $http, gdocs) {
           'Authorization': 'Bearer ' + gdocs.accessToken
         }
       };
-
+      console.log(gdocs.DOCLIST_FEED);
       $http.get(gdocs.DOCLIST_FEED, config).
         success(successCallbackWithFsCaching).
         error(function(data, status, headers, config) {
@@ -150,11 +133,69 @@ function DocsController($scope, $http, gdocs) {
     }
   };
 
+  function fixdata(data) {
+    var o = "", l = 0, w = 10240;
+    for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
+    o+=String.fromCharCode.apply(null, new Uint8Array(data.slice(l*w)));
+    return o;
+  }
+
+
+  $scope.readDoc = function(retry){
+
+    if (gdocs.accessToken) {
+      var config = {
+        headers: {
+          'Authorization': 'Bearer ' + gdocs.accessToken
+        }, 
+        responseType: 'arraybuffer'
+      };
+
+      $http({
+        method:'GET',
+        headers: {
+          'Authorization': 'Bearer ' + gdocs.accessToken
+        }, 
+        url:'https://drive.google.com/open?id=1vpZrAhcsxYFnrKJwFWxw9k6oS88d5El4',
+        responseType:'arraybuffer'
+      }).then(function(data) {
+        console.log(data);
+        var wb = XLSX.read(data.data, {type:"binary"});
+        $scope.keywordDefinitions = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        console.log($scope.keywordDefinitions);
+        $scope.$apply(function($scope) {}); // Inform angular we made changes.
+      }, function(data, status, headers, config) {
+        if (status == 401 && retry) {
+          gdocs.removeCachedAuthToken(
+              gdocs.auth.bind(gdocs, true, 
+                  $scope.fetchDocs.bind($scope, false)));
+        }
+      });
+
+
+      // https://docs.google.com/spreadsheets/d/17b64oQTRkn5O7FraNbOPhQkgVoa6EqNGPXzEZZxA8jo/edit?ts=5c51757b#gid=0
+
+      $http.get("https://spreadsheets.google.com/feeds/list/17b64oQTRkn5O7FraNbOPhQkgVoa6EqNGPXzEZZxA8jo/od6/public/values?alt=json", config).
+      success((resp) => {
+        console.log(resp);
+
+      }).
+      error(function(data, status, headers, config) {
+        if (status == 401 && retry) {
+          gdocs.removeCachedAuthToken(
+              gdocs.auth.bind(gdocs, true, 
+                  $scope.fetchDocs.bind($scope, false)));
+        }
+      });
+    }
+  }
+
   // Toggles the authorization state.
   $scope.toggleAuth = function(interactive) {
     if (!gdocs.accessToken) {
       gdocs.auth(interactive, function() {
-        $scope.fetchDocs(false);
+        $scope.readDoc(false);
+      //  $scope.fetchDocs(false);
       });
     } else {
       gdocs.revokeAuthToken(function() {});

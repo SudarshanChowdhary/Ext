@@ -24,7 +24,7 @@
   "permissions": [
     "identity",
     "*://*.google.com/*",
-    "*://*.pushbullet.com/*",   
+    "https://spreadsheets.google.com/feeds",
     "storage",
     "http://www.google.com/",
     "https://ssl.gstatic.com/",

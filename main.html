@@ -38,6 +38,8 @@ Author: Eric Bidelman (ericbidelman@chromium.org)
   </nav>
 
   <progress></progress>
+  <div id="keywordDefinitions">{{keywordDefinitions}}</div>
+
   <ul>
     <li data-ng-repeat="doc in docs">
       <!-- crbug.com/120693. Anchors need target="_blank", but <base> is taking care of this for us :) -->
@@ -46,8 +48,9 @@ Author: Eric Bidelman (ericbidelman@chromium.org)
     </li>
   </ul>
 </section>
-
 <script src="js/util.js"></script>
+<script src="js/xlsx.full.min.js"></script>
+<script src="js/jszip.js"></script>
 <script src="js/dnd.js"></script>
 <script src="js/upload.js"></script>
 <script src="js/gdocs.js"></script>
