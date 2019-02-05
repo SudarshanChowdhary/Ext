@@ -49,13 +49,45 @@ function DocsController($scope, $http, gdocs) {
   $http({
     method:'GET',
     params: {'alt': 'media'},
-       url:"file:///C:/Users/sudarshan/Downloads/codebeautify.json"
+      // url:"file:///C:/Users/sudarshan/Downloads/codebeautify.json"
+
+       url:"../source/codebeautify.json"
+
+      // url:"file:///usr/local/google/home/skoyalkar/Desktop/chrome-ext/Ext/source/codebeautify.json"
   }).then(function(data) {
     console.log(data);
+    
     $scope.keywordDefinitions = data.data;  
-    $scope.$apply(function($scope) {}); // Inform angular we made changes.
+    
+ //   $scope.$apply(function($scope) {}); // Inform angular we made changes.
   }, function(data, status, headers, config) {
   });
+
+
+//   $http({
+//     method:'GET',
+//     params: {'alt': 'media'},
+//       // url:"file:///C:/Users/sudarshan/Downloads/codebeautify.json"
+
+//        url:"../source/codebeautify.json"
+
+//       // url:"file:///usr/local/google/home/skoyalkar/Desktop/chrome-ext/Ext/source/codebeautify.json"
+//   }).then(function(data) {
+//     console.log(data);
+    
+//  //   $scope.keywordDefinitions = JSON.stringify(data.data, undefined, 2);  
+
+   
+//      var s = JSON.stringify(data.data,null,2) // format
+//   var e = new Option(s).innerHTML // escape
+
+//   console.log(e);
+// // document.body.insertAdjacentHTML('beforeend','<pre>'+e+'</pre>') // display
+
+//     $scope.$apply(function($scope) {}); // Inform angular we made changes.
+//   }, function(e, status, headers, config) {
+//   });
+
 
 
   // Response handler that caches file icons in the filesystem API.
@@ -141,64 +173,64 @@ function DocsController($scope, $http, gdocs) {
     }
   };
 
-  $scope.readDoc = function(retry){
+//   $scope.readDoc = function(retry){
 
-    if (gdocs.accessToken) {
-      var config = {
-        headers: {
-          'Authorization': 'Bearer ' + gdocs.accessToken
-        }, 
-        params: {'alt': 'json'},
+//     if (gdocs.accessToken) {
+//       var config = {
+//         headers: {
+//           'Authorization': 'Bearer ' + gdocs.accessToken
+//         }, 
+//         params: {'alt': 'json'},
 
-        responseType: 'arraybuffer'
-      };
-    //  https://drive.google.com/file/d/1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc/view?usp=sharing
-    //  https://drive.google.com/open?id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
+//         responseType: 'arraybuffer'
+//       };
+//     //  https://drive.google.com/file/d/1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc/view?usp=sharing
+//     //  https://drive.google.com/open?id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
 
-    // https://drive.google.com/uc?export=download&id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
+//     // https://drive.google.com/uc?export=download&id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
 
-    // https://drive.google.com/open?id=1U4IXs4toqEdp_YmIP1XYC39LUgUQWbdd
-      $http({
-        method:'GET',
-        headers: {
-          'Authorization': 'Bearer ' + gdocs.accessToken
-        }, 
-        params: {'alt': 'media'},
-        url:'https://drive.google.com/uc?export=download&id=1U4IXs4toqEdp_YmIP1XYC39LUgUQWbdd'
-       // url:"https://drive.google.com/corp/drive/u/0/my-drive/codebeautify.json"
-      }).then(function(data) {
-        console.log(data);
-        $scope.keywordDefinitions = data.data;  
+//     // https://drive.google.com/open?id=1U4IXs4toqEdp_YmIP1XYC39LUgUQWbdd
+//       $http({
+//         method:'GET',
+//         headers: {
+//           'Authorization': 'Bearer ' + gdocs.accessToken
+//         }, 
+//         params: {'alt': 'media'},
+//         url:'https://drive.google.com/uc?export=download&id=1U4IXs4toqEdp_YmIP1XYC39LUgUQWbdd'
+//        // url:"https://drive.google.com/corp/drive/u/0/my-drive/codebeautify.json"
+//       }).then(function(data) {
+//         console.log(data);
+//         $scope.keywordDefinitions = data.data;  
 
-        // var wb = XLSX.read(data.data, {type:"binary"});
-        // $scope.keywordDefinitions = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        console.log($scope.keywordDefinitions);
-        $scope.$apply(function($scope) {}); // Inform angular we made changes.
-      }, function(data, status, headers, config) {
-        if (status == 401 && retry) {
-          gdocs.removeCachedAuthToken(
-              gdocs.auth.bind(gdocs, true, 
-                  $scope.fetchDocs.bind($scope, false)));
-        }
-      });
+//         // var wb = XLSX.read(data.data, {type:"binary"});
+//         // $scope.keywordDefinitions = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+//         console.log($scope.keywordDefinitions);
+//         $scope.$apply(function($scope) {}); // Inform angular we made changes.
+//       }, function(data, status, headers, config) {
+//         if (status == 401 && retry) {
+//           gdocs.removeCachedAuthToken(
+//               gdocs.auth.bind(gdocs, true, 
+//                   $scope.fetchDocs.bind($scope, false)));
+//         }
+//       });
 
 
-      // https://docs.google.com/spreadsheets/d/17b64oQTRkn5O7FraNbOPhQkgVoa6EqNGPXzEZZxA8jo/edit?ts=5c51757b#gid=0
+//       // https://docs.google.com/spreadsheets/d/17b64oQTRkn5O7FraNbOPhQkgVoa6EqNGPXzEZZxA8jo/edit?ts=5c51757b#gid=0
 
-      $http.get("https://spreadsheets.google.com/feeds/list/17b64oQTRkn5O7FraNbOPhQkgVoa6EqNGPXzEZZxA8jo/od6/public/values?alt=json", config).
-      success((resp) => {
-        console.log(resp);
+//       $http.get("https://spreadsheets.google.com/feeds/list/17b64oQTRkn5O7FraNbOPhQkgVoa6EqNGPXzEZZxA8jo/od6/public/values?alt=json", config).
+//       success((resp) => {
+//         console.log(resp);
 
-      }).
-      error(function(data, status, headers, config) {
-        if (status == 401 && retry) {
-          gdocs.removeCachedAuthToken(
-              gdocs.auth.bind(gdocs, true, 
-                  $scope.fetchDocs.bind($scope, false)));
-        }
-      });
-    }
-  }
+//       }).
+//       error(function(data, status, headers, config) {
+//         if (status == 401 && retry) {
+//           gdocs.removeCachedAuthToken(
+//               gdocs.auth.bind(gdocs, true, 
+//                   $scope.fetchDocs.bind($scope, false)));
+//         }
+//       });
+//     }
+//   }
 
   // Toggles the authorization state.
   $scope.toggleAuth = function(interactive) {
