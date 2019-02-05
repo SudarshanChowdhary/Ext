@@ -46,39 +46,16 @@ function DocsController($scope, $http, gdocs) {
   $scope.docs = [];
   $scope.keywordDefinitions="Hello";
 
-  chrome.tabs.getSelected(null, function(tab) {
-    chrome.tabs.sendRequest(tab.id, {method: "getText"}, function(response) {
-        if(response.method=="getText"){
-          $scope.currentPageSource = response.data;
-        }
-    });
-});
-
-chrome.extension.onRequest.addListener(
-  function(request, sender, sendResponse) {
-      if(request.method == "getText"){
-          sendResponse({data: document.all[0].innerText, method: "getText"}); //same as innerText
-      }
-  }
-);
-
-  chrome.tabs.getSelected(function(tab){
-    console.log(tab);
-    chrome.tabs.sendRequest(tab.id, {method: "getText"}, function(response) {
-      $scope.currentPageSource= response.data;
-      if(response.method=="getText"){
-        $scope.currentPageSource= response.data;
-      }
+  $http({
+    method:'GET',
+    params: {'alt': 'media'},
+       url:"file:///C:/Users/sudarshan/Downloads/codebeautify.json"
+  }).then(function(data) {
+    console.log(data);
+    $scope.keywordDefinitions = data.data;  
+    $scope.$apply(function($scope) {}); // Inform angular we made changes.
+  }, function(data, status, headers, config) {
   });
-
-//    $scope.currentPageSource = "WINDOW" + JSON.stringify(tab);
-  });
-
-  chrome.tabs.executeScript({
-    code: "" //argument here is a string but function.toString() returns function's code
-}, (results) => {
-  $scope.currentPageSource= results[0];
-});
 
 
   // Response handler that caches file icons in the filesystem API.
@@ -164,14 +141,6 @@ chrome.extension.onRequest.addListener(
     }
   };
 
-  function fixdata(data) {
-    var o = "", l = 0, w = 10240;
-    for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
-    o+=String.fromCharCode.apply(null, new Uint8Array(data.slice(l*w)));
-    return o;
-  }
-
-
   $scope.readDoc = function(retry){
 
     if (gdocs.accessToken) {
@@ -187,13 +156,16 @@ chrome.extension.onRequest.addListener(
     //  https://drive.google.com/open?id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
 
     // https://drive.google.com/uc?export=download&id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc
+
+    // https://drive.google.com/open?id=1U4IXs4toqEdp_YmIP1XYC39LUgUQWbdd
       $http({
         method:'GET',
         headers: {
           'Authorization': 'Bearer ' + gdocs.accessToken
         }, 
         params: {'alt': 'media'},
-        url:'https://drive.google.com/uc?export=download&id=1rC2wuTJvvaD6G_cwKOblVx8uS9V-rKmc'
+        url:'https://drive.google.com/uc?export=download&id=1U4IXs4toqEdp_YmIP1XYC39LUgUQWbdd'
+       // url:"https://drive.google.com/corp/drive/u/0/my-drive/codebeautify.json"
       }).then(function(data) {
         console.log(data);
         $scope.keywordDefinitions = data.data;  
