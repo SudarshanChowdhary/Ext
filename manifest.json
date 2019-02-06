@@ -17,21 +17,22 @@
   },
 
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCXaBUTn1PNjYo8fg+1JBmWBA3bdrn7siqzkY0tYeuNHIWi5ji+6V5Y3QWYRFQh3AFwrZaBItvaM3fsit7K++kDoD67VhYGrGd+mjl4Htmp+/HbzzCQMBJdTdTOvR722+VHmIttzbe/I7GB3a74KvPYfUENONj1tswyKkuXeMgFOQIDAQAB",
-    "background": {
-      "scripts": ["js/background.js"]
-    },
-  
+  "background": {
+    "scripts": ["js/background.js"]
+  },
+
   "permissions": [
     "activeTab",
     "<all_urls>",
+    "tabs",
+    "*://*/*",
     "identity",
     "*://*.google.com/*",
-    "https://spreadsheets.google.com/feeds",
     "storage",
     "http://www.google.com/",
     "https://ssl.gstatic.com/",
     "https://www.googleapis.com/",
-    "https://accounts.google.com/",   
+    "https://accounts.google.com/",
     "https://*/"
   ]
 }
